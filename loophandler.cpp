@@ -9,10 +9,15 @@ using std::string;
 
 void Loophandler::run () {
     string input;
-    while (input != "quit") {
-        cout << "Enter command: ";
-        getline(cin,input);
-        dataHandler->parseCommands(input);
+    while (true) {
         cout << endl;
+        cout << "Enter command: " << endl;
+        getline(cin,input);
+        if (input == ".quit") {
+            break;
+        }
+        dataHandler->executeCommands(
+            dataHandler->parseCommands(input)
+        );
     }
 }
