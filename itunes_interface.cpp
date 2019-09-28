@@ -6,10 +6,14 @@ using std::endl;
 using std::string;
 using std::vector;
 
-vector<string> ItunesInterface::parseCommands(string s) {
-    string ret = ItunesInterface::normalize(s);
-    cout << ret << endl;
-    vector<string> v;
+vector<string> ItunesInterface::parseCommands(string arg) {
+    vector<string> v = ItunesInterface::normalize(arg);
+
+    for (vector<string>::iterator it = v.begin(); it != v.end(); ++it) {
+        cout << *it << endl;
+    }
+
+    // cout << normalized << endl;
     return v;
 }
 
@@ -32,58 +36,64 @@ void ItunesInterface::dot_log(vector<string> args) {
 
 }
 
-string ItunesInterface::normalize(string arg) {
-    bool quoting = false;
-    bool spaced = false;
-    string normalized = "";
-    int initIndex = 0;
 
-    if (arg.length() == 0) {
-        cout << "ERROR: arg is empty";
-        return "";
-    }
+// Delimits args into vector
+// Handles bad inputs and trims whitespace
+vector<string> ItunesInterface::normalize(string arg) {
+    int indexOfInterest = 0;
+    vector<string> v;
 
-    if (arg[0] == ' ') {
-        spaced = true;
-        initIndex = 1;
-    }
-
-    for (int i = initIndex; i < arg.length(); i++) {
-        if (!quoting && arg[i] == ' ' && spaced) {
-            continue;
+    for (int i = 0; i < arg.length(); i++) {
+        // quote to quote traversal
+        if (arg[i] == '"') {
+            indexOfInterest = i;
+            for (int j = i; j < arg.length(); j++) {
+                if (arg[j] == '"' && j!=i) {
+                    indexOfInterest = j;
+                    break;
+                }
+            }
+            if (indexOfInterest == i) {
+                cout << "ERROR: Unenclosed double quotes";
+                return vector<string> ();
+            }
+            else if (indexOfInterest == i + 1) {
+                cout << "ERROR: Empty double quoted argument";
+                return vector<string> ();
+            }
+            else {
+                v.push_back(arg.substr(i+1, indexOfInterest - i - 1));
+                i = indexOfInterest;
+            }
         }
-        else if (!quoting && arg[i] == ' ' && !spaced) {
-            normalized += arg[i];
-            spaced = true;
+        // ignoring of spaces outsides quotes traversal
+        else if (arg[i] == ' ') {
+            for (int j = i; j < arg.length(); j++) {
+                if (arg[j] == ' ') {
+                    indexOfInterest = j;
+                }
+                else {
+                    break;
+                }
+            }
+            i = indexOfInterest;
         }
-        else if (quoting && arg[i] == '"') {
-            normalized += arg[i];
-            quoting = false;
-            spaced = false;
-        }
-        else if (!quoting && arg[i] == '"' && !spaced) {
-            normalized += ' ';
-            normalized += arg[i];
-            quoting = true;
-            spaced = true;
-        }
-        else if (!quoting && arg[i] == '"') {
-            normalized += arg[i];
-            quoting = true;
-            spaced = false;
-        }
+        // unquoted unspaced character traversal
         else {
-            normalized += arg[i];
-            spaced = false;
+            for (int j = i; j < arg.length(); j++) {
+                if (arg[j] == ' ' || arg[j] == '"') {
+                    break;
+                }
+                else {
+                    indexOfInterest = j;
+                }
+            }
+            v.push_back(arg.substr(i, indexOfInterest - i + 1));
+            i = indexOfInterest;
         }
     }
 
-    if (quoting) {
-        cout << "ERROR: unenclosed quotes";
-        return "";
-    }
-    
-    return normalized;
+    return v;
 }
 
 
