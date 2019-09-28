@@ -51,6 +51,12 @@ vector<string> ItunesInterface::parseCommands(string arg) {
                 if (arg[j] == ' ' || arg[j] == '"') {
                     break;
                 }
+                else if (arg[i] == '/') {
+                    if (i < arg.length() - 2 && arg[i+1] == '/') {
+                        v.push_back(arg.substr(i,arg.length() - i));
+                        return v;
+                    }
+                }
                 else {
                     indexOfInterest = j;
                 }
@@ -138,7 +144,7 @@ void ItunesInterface::deleteSong(std::vector<std::string> args) {
 }
 
 void ItunesInterface::dot_help() {
-
+    
 }
 void ItunesInterface::dot_read(std::vector<std::string> args) {
 
