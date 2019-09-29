@@ -283,6 +283,9 @@ void ItunesInterface::dot_log(vector<string> args) {
         outfile.close();
     }
     else if (option == "show") {
+        cout << "============="<< endl;
+        cout << "     LOG     "<< endl;
+        cout << "============="<< endl;
         for (vector<string>::iterator it = loggingContainerVec.begin(); it != loggingContainerVec.end(); it++) {
             cout << *it << endl;
         }
