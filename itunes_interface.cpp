@@ -10,6 +10,8 @@ vector<string> ItunesInterface::parseCommands(string arg) {
     int indexOfInterest = 0;
     vector<string> v;
 
+    ItunesInterface::appendCommandLog(arg);
+
     for (int i = 0; i < arg.length(); i++) {
         // quote to quote traversal
         if (arg[i] == '"') {
@@ -21,11 +23,13 @@ vector<string> ItunesInterface::parseCommands(string arg) {
                 }
             }
             if (indexOfInterest == i) {
-                cout << "ERROR: Unenclosed double quotes" << endl;
+                cout << ERROR_OPEN_DOUBLE_QUOTE << endl;
+                ItunesInterface::appendOutputLog(ERROR_OPEN_DOUBLE_QUOTE);
                 return vector<string> ();
             }
             else if (indexOfInterest == i + 1) {
-                cout << "ERROR: Empty double quoted argument" << endl;
+                cout << ERROR_EMPTY_DOUBLE_QUOTE << endl;
+                ItunesInterface::appendOutputLog(ERROR_EMPTY_DOUBLE_QUOTE);
                 return vector<string> ();
             }
             else {
@@ -51,11 +55,13 @@ vector<string> ItunesInterface::parseCommands(string arg) {
                 if (arg[j] == ' ' || arg[j] == '"') {
                     break;
                 }
-                else if (arg[i] == '/') {
-                    if (i < arg.length() - 2 && arg[i+1] == '/') {
-                        v.push_back(arg.substr(i,arg.length() - i));
+                //  enables parsing of comments
+                else if (arg[j] == '/' && j < arg.length() - 1 && arg[j+1] == '/') {
+                        if (i != j) {
+                            v.push_back(arg.substr(i,j-i));
+                        }
+                        v.push_back(arg.substr(j,arg.length() - j));
                         return v;
-                    }
                 }
                 else {
                     indexOfInterest = j;
@@ -74,15 +80,24 @@ void ItunesInterface::executeCommands(vector<string> v) {
         cout << "ERROR: Nothing to execute" << endl;
         return;
     }
+    if (v.back().length() > 1 && v.back().substr(0,2) == "//" && readingMode == ENUM_READ::IDLE) {
+        // extract and log, only used for cmdline comments, his instructions are unclear and this can be a case
+        // will be processessed as a command output
+        ItunesInterface::appendOutputLog(v.back());
+        v.pop_back();
+    }
+    if (v.size() == 0) {
+        return;
+    }
     string cmd = v[0];
     if (cmd == "add") {
-        ItunesInterface::addSong(v);
+        ItunesInterface::add(v);
     }
     else if (cmd == "show") {
-        ItunesInterface::showSong(v);
+        ItunesInterface::show(v);
     }
     else if (cmd == "delete") {
-        ItunesInterface::deleteSong(v);
+        ItunesInterface::del(v);
     }
     else if (cmd == ".help") {
         ItunesInterface::dot_help();
@@ -110,7 +125,7 @@ void ItunesInterface::executeCommands(vector<string> v) {
     }
 }
 
-void ItunesInterface::addSong(std::vector<std::string> args) {
+void ItunesInterface::add(vector<string> args) {
     cout << "PARSED COMMAND:" << endl;
     if (args.size() < 2) {
         cout << "ERROR: more arguments required for add cmd" << endl;
@@ -121,7 +136,7 @@ void ItunesInterface::addSong(std::vector<std::string> args) {
     }
 }
 
-void ItunesInterface::showSong(std::vector<std::string> args) {
+void ItunesInterface::show(vector<string> args) {
     cout << "PARSED COMMAND:" << endl;
     if (args.size() < 2) {
         cout << "ERROR: more arguments required for show cmd" << endl;
@@ -132,7 +147,7 @@ void ItunesInterface::showSong(std::vector<std::string> args) {
     }
 }
 
-void ItunesInterface::deleteSong(std::vector<std::string> args) {
+void ItunesInterface::del(vector<string> args) {
     cout << "PARSED COMMAND:" << endl;
     if (args.size() < 2) {
         cout << "ERROR: more arguments required for delete cmd" << endl;
@@ -146,26 +161,38 @@ void ItunesInterface::deleteSong(std::vector<std::string> args) {
 void ItunesInterface::dot_help() {
     
 }
-void ItunesInterface::dot_read(std::vector<std::string> args) {
+void ItunesInterface::dot_read(vector<string> args) {
 
 }
 
-void ItunesInterface::dot_log(std::vector<std::string> args) {
+void ItunesInterface::dot_log(vector<string> args) {
 
 }
 
-void ItunesInterface::dot_trim(std::vector<std::string> args) {
+void ItunesInterface::dot_trim(vector<string> args) {
 
 }
 
-void ItunesInterface::dot_startsWith(std::vector<std::string> args) {
+void ItunesInterface::dot_startsWith(vector<string> args) {
 
 }
 
-void ItunesInterface::dot_endsWith(std::vector<std::string> args) {
+void ItunesInterface::dot_endsWith(vector<string> args) {
 
 }
 
-void ItunesInterface::dot_toTitleCase(std::vector<std::string> args) {
+void ItunesInterface::dot_toTitleCase(vector<string> args) {
 
+}
+
+void ItunesInterface::appendCommandLog(string arg) {
+    if (loggingMode == ENUM_LOG::COMMAND_ONLY || loggingMode == ENUM_LOG::FULL) {
+        loggingContainerVec.push_back(arg);
+    }
+}
+
+void ItunesInterface::appendOutputLog(string arg) {
+    if (loggingMode == ENUM_LOG::OUTPUT_ONLY || loggingMode == ENUM_LOG::FULL) {
+            loggingContainerVec.push_back(arg);
+    }
 }

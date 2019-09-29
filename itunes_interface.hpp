@@ -12,15 +12,25 @@ class ItunesInterface: public Interface {
         OUTPUT_ONLY,
         FULL
     };
+    enum class ENUM_READ {
+        READING,
+        IDLE
+    };
     ENUM_LOG loggingMode = ENUM_LOG::OFF;
+    ENUM_READ readingMode = ENUM_READ::IDLE;
 
-    void addSong(std::vector<std::string> args);
-    void showSong(std::vector<std::string> args);
-    void deleteSong(std::vector<std::string> args);
+    const std::string ERROR_OPEN_DOUBLE_QUOTE = "ERROR: Unenclosed double quotes";
+    const std::string ERROR_EMPTY_DOUBLE_QUOTE = "ERROR: Empty double quoted argument";
+
+    void add(std::vector<std::string> args);
+    void show(std::vector<std::string> args);
+    void del(std::vector<std::string> args);
 
     void dot_help();
     void dot_read(std::vector<std::string> args);
     void dot_log(std::vector<std::string> args);
+    void appendCommandLog(std::string arg);
+    void appendOutputLog(std::string arg);
 
     void dot_trim(std::vector<std::string> args);
     void dot_startsWith(std::vector<std::string> args);
