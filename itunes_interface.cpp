@@ -25,12 +25,10 @@ vector<string> ItunesInterface::parseCommands(string arg) {
                 }
             }
             if (indexOfInterest == i) {
-                cout << ERROR_OPEN_DOUBLE_QUOTE << endl;
                 ItunesInterface::appendOutputLog(ERROR_OPEN_DOUBLE_QUOTE);
                 return vector<string> ();
             }
             else if (indexOfInterest == i + 1) {
-                cout << ERROR_EMPTY_DOUBLE_QUOTE << endl;
                 ItunesInterface::appendOutputLog(ERROR_EMPTY_DOUBLE_QUOTE);
                 return vector<string> ();
             }
@@ -79,7 +77,7 @@ vector<string> ItunesInterface::parseCommands(string arg) {
 
 void ItunesInterface::executeCommands(vector<string> v) {
     if (v.size() == 0) {
-        cout << "ERROR: Nothing to execute" << endl;
+        ItunesInterface::appendOutputLog("ERROR: Nothing to execute");
         return;
     }
 
@@ -127,40 +125,40 @@ void ItunesInterface::executeCommands(vector<string> v) {
         ItunesInterface::dot_toTitleCase(v);
     }
     else {
-        cout << "ERROR: Invalid command: " << cmd << endl;
+        ItunesInterface::appendOutputLog("ERROR: Invalid command: " + cmd);
     }
 }
 
 void ItunesInterface::add(vector<string> args) {
-    cout << "PARSED COMMAND:" << endl;
+    ItunesInterface::appendOutputLog("PARSED COMMAND:");
     if (args.size() < 2) {
-        cout << "ERROR: more arguments required for add cmd" << endl;
+        ItunesInterface::appendOutputLog("ERROR: more arguments required for add cmd");
         return;
     }
     for (vector<string>::iterator it = args.begin(); it != args.end(); it++) {
-        cout << *it << endl;
+        ItunesInterface::appendOutputLog(*it);
     }
 }
 
 void ItunesInterface::show(vector<string> args) {
-    cout << "PARSED COMMAND:" << endl;
+    ItunesInterface::appendOutputLog("PARSED COMMAND:");
     if (args.size() < 2) {
-        cout << "ERROR: more arguments required for show cmd" << endl;
+        ItunesInterface::appendOutputLog("ERROR: more arguments required for show cmd");
         return;
     }
     for (vector<string>::iterator it = args.begin(); it != args.end(); it++) {
-        cout << *it << endl;
+        ItunesInterface::appendOutputLog(*it);
     }
 }
 
 void ItunesInterface::del(vector<string> args) {
-    cout << "PARSED COMMAND:" << endl;
+    ItunesInterface::appendOutputLog("PARSED COMMAND:");
     if (args.size() < 2) {
-        cout << "ERROR: more arguments required for delete cmd" << endl;
+        ItunesInterface::appendOutputLog("ERROR: more arguments required for delete cmd");
         return;
     }
     for (vector<string>::iterator it = args.begin(); it != args.end(); it++) {
-        cout << *it << endl;
+        ItunesInterface::appendOutputLog(*it);
     }
 }
 
@@ -253,9 +251,9 @@ void ItunesInterface::dot_read(vector<string> args) {
 
 void ItunesInterface::dot_log(vector<string> args) {
     if (args.size() < 2) {
+        cout << "ERROR: Not enough arguments for .log" << endl;
         return;
     }
-    
     string option = args[1];
     if (option == "clear") {
         loggingContainerVec.clear();
@@ -294,6 +292,19 @@ void ItunesInterface::dot_log(vector<string> args) {
     }
 }
 
+void ItunesInterface::appendCommandLog(string arg) {
+    if (loggingMode == ENUM_LOG::COMMAND_ONLY || loggingMode == ENUM_LOG::FULL) {
+        loggingContainerVec.push_back(arg);
+    }
+}
+
+void ItunesInterface::appendOutputLog(string arg) {
+    cout << arg << endl;
+    if (loggingMode == ENUM_LOG::OUTPUT_ONLY || loggingMode == ENUM_LOG::FULL) {
+            loggingContainerVec.push_back(arg);
+    }
+}
+
 void ItunesInterface::dot_trim(vector<string> args) {
 
 }
@@ -308,16 +319,4 @@ void ItunesInterface::dot_endsWith(vector<string> args) {
 
 void ItunesInterface::dot_toTitleCase(vector<string> args) {
 
-}
-
-void ItunesInterface::appendCommandLog(string arg) {
-    if (loggingMode == ENUM_LOG::COMMAND_ONLY || loggingMode == ENUM_LOG::FULL) {
-        loggingContainerVec.push_back(arg);
-    }
-}
-
-void ItunesInterface::appendOutputLog(string arg) {
-    if (loggingMode == ENUM_LOG::OUTPUT_ONLY || loggingMode == ENUM_LOG::FULL) {
-            loggingContainerVec.push_back(arg);
-    }
 }
