@@ -2,8 +2,15 @@ README
 
 Code authored by: Rishi Sharma 101011443
 
+DECOMPRESS ZIP
+
+unzip mytunes.zip
+cd comp2404_a1
+
+
 TO COMPILE
 either use:
+
 source sourceMe
 
 or
