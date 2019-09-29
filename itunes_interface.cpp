@@ -13,7 +13,7 @@ vector<string> ItunesInterface::parseCommands(string arg) {
     int indexOfInterest = 0;
     vector<string> v;
 
-    if (arg.length() > 1 && arg.substr(0,2) == "//") {
+    if (arg.length() > 1 && arg.substr(0,2) == "//" && readingMode == ENUM_READ::READING) {
     }
     else {
         ItunesInterface::appendCommandLog(arg);
@@ -240,8 +240,8 @@ void ItunesInterface::dot_help() {
     cout<<""<<endl;
     cout<<"DEVELOPER COMMANDS (NOT FOR PRODUCTION):"<<endl;
     cout<<"//These provide are to test certain developer functions"<<endl;
-    cout<<".trim    //trim the argument"<<endl;
-    cout<<"	.trim \"  a   day ago\" //a day ago"<<endl;
+    cout<<".trim    //trim the argument, ignores double quoted text"<<endl;
+    cout<<"	.trim a   day    ago \"  a   day ago\" //a day ago \"  a   day ago\"" <<endl;
     cout<<".startsWith    //test string prefix"<<endl;
     cout<<"	.startsWith \"Hello\" \"Hel\" //true"<<endl;
     cout<<".endsWith    //test string suffix"<<endl;
@@ -334,17 +334,90 @@ void ItunesInterface::appendOutputLog(string arg) {
 }
 
 void ItunesInterface::dot_trim(vector<string> args) {
-
+    // everything was trimmed in the earlier parsed command,
+    // these functions must be accessed through execute parsed command by design
+    if (args.size() < 2) {
+        ItunesInterface::appendOutputLog("ERROR: .trim needs one argument");
+        return;
+    }
+    string trimmedBuilder = "";
+    cout << "ALERT: Spaces in double quoted strings are not trimmed, use unquoted arguments to trim" << endl;
+    for (int i = 1; i < args.size(); i++) {
+        trimmedBuilder += args[i];
+        if (i < args.size() - 1) {
+            trimmedBuilder += " ";
+        }
+    }
+        ItunesInterface::appendOutputLog("Trimmed output: " + trimmedBuilder);
 }
 
 void ItunesInterface::dot_startsWith(vector<string> args) {
-
+    if (args.size() < 3) {
+        ItunesInterface::appendOutputLog("ERROR: .startsWith needs at least two arguments");
+        return;
+    }
+    cout << "ALERT: spacing in double quoted arguments will not be trimmed" << endl;
+    string root = args[1];
+    string prefix = args[2];
+    if (prefix.length() > root.length()) {
+        ItunesInterface::appendOutputLog("ERROR: .startsWith prefix longer than root");
+        return;
+    }
+    if (root.substr(0,prefix.length()) == prefix) {
+        ItunesInterface::appendOutputLog("StartsWith output: " + prefix + " is a prefix to " + root + "; TRUE");
+    }
+    else {
+        ItunesInterface::appendOutputLog("StartsWith output: " + prefix + " is not a prefix to " + root + "; FALSE");
+    }
 }
 
 void ItunesInterface::dot_endsWith(vector<string> args) {
-
+    if (args.size() < 3) {
+        ItunesInterface::appendOutputLog("ERROR: .endsWith needs at least two arguments");
+        return;
+    }
+    cout << "ALERT: spacing in double quoted arguments will not be trimmed" << endl;
+    string root = args[1];
+    string suffix = args[2];
+    if (suffix.length() > root.length()) {
+        ItunesInterface::appendOutputLog("ERROR: .endsWith suffix longer than root");
+        return;
+    }
+    if (root.substr(root.length() - suffix.length(),suffix.length()) == suffix) {
+        ItunesInterface::appendOutputLog("EndsWIth output: " + suffix + " is a suffix to " + root + "; TRUE");
+    }
+    else {
+        ItunesInterface::appendOutputLog("EndsWIth output: " + suffix + " is not a suffix to " + root + "; FALSE");
+    }
 }
 
 void ItunesInterface::dot_toTitleCase(vector<string> args) {
+    if (args.size() < 2) {
+        ItunesInterface::appendOutputLog("ERROR: .toTitleCase needs at least one argument");
+        return;
+    }
+    args.erase(args.begin());
+    for (int i = 0; i < args.size(); i++) {
+        for (int j = 0; j < args[i].length(); j++) {
+            args[i][j] = tolower(args[i][j]);
+        }
+    }
+    if (args[0] == "the") {
+        args[args.size() - 1] += ",";
+        args.erase(args.begin());
+        args.push_back("the");
+    }
+    for (int i = 0; i < args.size(); i++) {
+        args[i][0] = toupper(args[i][0]);
+    }
 
+    string titlecase = "";
+    cout << "ALERT: Double quoted strings are not delimited, use unquoted arguments to format" << endl;
+    for (int i = 0; i < args.size(); i++) {
+        titlecase += args[i];
+        if (i < args.size() - 1) {
+            titlecase += " ";
+        }
+    }
+    ItunesInterface::appendOutputLog("Titlecase output: " + titlecase);
 }
