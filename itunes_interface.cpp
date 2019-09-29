@@ -6,13 +6,18 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
+using std::ifstream;
 using std::ofstream;
 
 vector<string> ItunesInterface::parseCommands(string arg) {
     int indexOfInterest = 0;
     vector<string> v;
 
-    ItunesInterface::appendCommandLog(arg);
+    if (arg.length() > 1 && arg.substr(0,2) == "//") {
+    }
+    else {
+        ItunesInterface::appendCommandLog(arg);
+    }
 
     for (int i = 0; i < arg.length(); i++) {
         // quote to quote traversal
@@ -81,8 +86,9 @@ void ItunesInterface::executeCommands(vector<string> v) {
         return;
     }
 
-    // extract and log, only used for cmdline comments, his instructions are unclear and this can be a case
-    // will be processed as a command output
+    // extract and log comment, only used for cmdline comments,
+    // his instructions are unclear and this can be a case
+    // will be processed as an output
     if (v.back().length() > 1 && v.back().substr(0,2) == "//") {
         if (readingMode == ENUM_READ::IDLE) {
             ItunesInterface::appendOutputLog(v.back());
@@ -103,10 +109,10 @@ void ItunesInterface::executeCommands(vector<string> v) {
     else if (cmd == "delete") {
         ItunesInterface::del(v);
     }
-    else if (cmd == ".help") {
+    else if (cmd == ".help" && readingMode == ENUM_READ::IDLE) {
         ItunesInterface::dot_help();
     }
-    else if (cmd == ".read") {
+    else if (cmd == ".read" && readingMode == ENUM_READ::IDLE) {
         ItunesInterface::dot_read(v);
     }
     else if (cmd == ".log") {
@@ -247,6 +253,25 @@ void ItunesInterface::dot_help() {
 }
 
 void ItunesInterface::dot_read(vector<string> args) {
+    if (args.size() < 2) {
+        ItunesInterface::appendOutputLog("ERROR: no filename specified");
+        return;
+    }
+
+    ifstream infile (args[1]);
+    if (!infile) {
+        ItunesInterface::appendOutputLog("ERROR: could not open file");
+        return;
+    }
+    string input;
+    readingMode = ENUM_READ::READING;
+    while(getline(infile, input)) {
+        ItunesInterface::executeCommands(
+            ItunesInterface::parseCommands(input)
+        );
+    }
+    readingMode = ENUM_READ::IDLE;
+    infile.close();
 }
 
 void ItunesInterface::dot_log(vector<string> args) {
@@ -270,9 +295,9 @@ void ItunesInterface::dot_log(vector<string> args) {
     else if (option == "stop") {
         loggingMode = ENUM_LOG::OFF;
     }
-    else if (option == "save") {
+    else if (option == "save" && readingMode == ENUM_READ::IDLE) {
         if (args.size() < 3) {
-            cout << "ERROR: No filename specified" << endl;
+            ItunesInterface::appendOutputLog("ERROR: No filename specified");
             return;
         }
         ofstream outfile;
@@ -291,7 +316,7 @@ void ItunesInterface::dot_log(vector<string> args) {
         }
     }
     else {
-        cout << "ERROR: Invalid option for .log" << endl;
+        ItunesInterface::appendOutputLog("ERROR: Invalid option for .log");
     }
 }
 
