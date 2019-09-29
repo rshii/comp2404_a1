@@ -242,11 +242,11 @@ void ItunesInterface::dot_help() {
     cout<<"//These provide are to test certain developer functions"<<endl;
     cout<<".trim    //trim the argument, ignores double quoted text"<<endl;
     cout<<"	.trim a   day    ago \"  a   day ago\" //a day ago \"  a   day ago\"" <<endl;
-    cout<<".startsWith    //test string prefix"<<endl;
+    cout<<".startsWith    //test string prefix, ignores formatting double quoted text"<<endl;
     cout<<"	.startsWith \"Hello\" \"Hel\" //true"<<endl;
-    cout<<".endsWith    //test string suffix"<<endl;
+    cout<<".endsWith    //test string suffix, ignores formatting double quoted text"<<endl;
     cout<<"	.endsWith \"Hello\" \"llo\" //true"<<endl;
-    cout<<".toTitleCase    //returns title cased string"<<endl;
+    cout<<".toTitleCase    //returns title cased string, ignores formatting double quoted text"<<endl;
     cout<<"	.toTitleCase \"the girl from ipanema\" //Girl From Ipanema, The"<<endl;
     cout<<"=========================================================="<<endl;
     cout<<"=========================================================="<<endl;

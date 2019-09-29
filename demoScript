@@ -1,0 +1,18 @@
+.log start_both
+//script comment
+add -r 102 "A Hard Day's Night" "Beatles" "George Martin" 1964
+show -t 100 1000 1
+delete -u ajones "Anne Jones"
+.log show
+.log clear
+.log show
+bad input 1
+"badinput2"
+.trim a    nice     day out
+.trim a       nice    day    "    out    " // the out should be surrounded by spaces
+.startsWith hello hel
+.startsWith hello "   hel" // here the spaces count in the double quoted second argument, prefix will be longer than root: ERROR
+.endsWith narnia arnia
+.endsWith short_root Looooong_suffix
+.toTitleCase the     girl   from    panama
+.toTitleCase "the    girl    from    panama"  // Only first letter will be formatted
