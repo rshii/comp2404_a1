@@ -99,25 +99,28 @@ void ItunesInterface::executeCommands(vector<string> v) {
     else if (cmd == "delete") {
         ItunesInterface::del(v);
     }
-    else if (cmd == ".help" && readingMode == ENUM_READ::IDLE) {
-        ItunesInterface::dot_help();
-    }
-    else if (cmd == ".read" && readingMode == ENUM_READ::IDLE) {
-        ItunesInterface::dot_read(v);
-    }
     else if (cmd == ".log") {
         ItunesInterface::dot_log(v);
     }
-    else if (cmd == ".trim" && readingMode == ENUM_READ::IDLE) {
+    else if (readingMode == ENUM_READ::READING && cmd[0] == '.') {
+        ItunesInterface::appendOutputLog("WARNING: Developer command not scriptable: " + cmd);
+    }
+    else if (cmd == ".help") {
+        ItunesInterface::dot_help();
+    }
+    else if (cmd == ".read") {
+        ItunesInterface::dot_read(v);
+    }
+    else if (cmd == ".trim") {
         ItunesInterface::dot_trim(v);
     }
-    else if (cmd == ".startsWith" && readingMode == ENUM_READ::IDLE) {
+    else if (cmd == ".startsWith") {
         ItunesInterface::dot_startsWith(v);
     }
-    else if (cmd == ".endsWith" && readingMode == ENUM_READ::IDLE) {
+    else if (cmd == ".endsWith") {
         ItunesInterface::dot_endsWith(v);
     }
-    else if (cmd == ".toTitleCase" && readingMode == ENUM_READ::IDLE){
+    else if (cmd == ".toTitleCase"){
         ItunesInterface::dot_toTitleCase(v);
     }
     else {
@@ -323,14 +326,14 @@ void ItunesInterface::dot_log(vector<string> args) {
 
 void ItunesInterface::appendCommandLog(string arg) {
     if (loggingMode == ENUM_LOG::COMMAND_ONLY || loggingMode == ENUM_LOG::FULL) {
-        loggingContainerVec.push_back(arg);
+        loggingContainerVec.push_back("INPUT: " + arg);
     }
 }
 
 void ItunesInterface::appendOutputLog(string arg) {
     cout << arg << endl;
     if (loggingMode == ENUM_LOG::OUTPUT_ONLY || loggingMode == ENUM_LOG::FULL) {
-            loggingContainerVec.push_back(arg);
+            loggingContainerVec.push_back("OUTPUT: " + arg);
     }
 }
 
@@ -342,7 +345,7 @@ void ItunesInterface::dot_trim(vector<string> args) {
         return;
     }
     string trimmedBuilder = "";
-    cout << "ALERT: Spaces in double quoted strings are not trimmed, use unquoted arguments to trim" << endl;
+    cout << "WARNING: Spaces in double quoted strings are not trimmed, use unquoted arguments to trim" << endl;
     for (int i = 1; i < args.size(); i++) {
         trimmedBuilder += args[i];
         if (i < args.size() - 1) {
@@ -357,7 +360,7 @@ void ItunesInterface::dot_startsWith(vector<string> args) {
         ItunesInterface::appendOutputLog("ERROR: .startsWith needs at least two arguments");
         return;
     }
-    cout << "ALERT: spacing in double quoted arguments will not be trimmed" << endl;
+    cout << "WARNING: spacing in double quoted arguments will not be trimmed" << endl;
     string root = args[1];
     string prefix = args[2];
     if (prefix.length() > root.length()) {
@@ -377,7 +380,7 @@ void ItunesInterface::dot_endsWith(vector<string> args) {
         ItunesInterface::appendOutputLog("ERROR: .endsWith needs at least two arguments");
         return;
     }
-    cout << "ALERT: spacing in double quoted arguments will not be trimmed" << endl;
+    cout << "WARNING: spacing in double quoted arguments will not be trimmed" << endl;
     string root = args[1];
     string suffix = args[2];
     if (suffix.length() > root.length()) {
@@ -413,7 +416,7 @@ void ItunesInterface::dot_toTitleCase(vector<string> args) {
     }
 
     string titlecase = "";
-    cout << "ALERT: Double quoted strings are not delimited, use unquoted arguments to format" << endl;
+    cout << "WARNING: Double quoted strings are not delimited, use unquoted arguments to format" << endl;
     for (int i = 0; i < args.size(); i++) {
         titlecase += args[i];
         if (i < args.size() - 1) {
