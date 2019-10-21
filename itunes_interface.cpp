@@ -13,7 +13,7 @@ vector<string> ItunesInterface::parseCommands(string arg) {
     vector<string> v;
     int indexOfInterest = 0;
 
-    // truncates inline comment and includes in command log if not scripted
+    // truncates inline comment and includes in command log if not in read script mode
     int commentPos = arg.find("//");
     if (commentPos != -1) {
         if (commentPos != 0) {
@@ -28,6 +28,10 @@ vector<string> ItunesInterface::parseCommands(string arg) {
         ItunesInterface::appendCommandLog(arg);
     }
 
+    // traverses string input
+    // treats quoted arguments as block, unquoting them
+    // treats unquoted chains of non-space text as block
+    // seperates blocks of text by delimiting and ignoring spacing
     for (int i = 0; i < arg.length(); i++) {
         // quote to quote traversal
         if (arg[i] == '"') {
@@ -68,14 +72,6 @@ vector<string> ItunesInterface::parseCommands(string arg) {
             for (int j = i; j < arg.length(); j++) {
                 if (arg[j] == ' ' || arg[j] == '"') {
                     break;
-                }
-                //  enables parsing of comments
-                else if (arg[j] == '/' && j < arg.length() - 1 && arg[j+1] == '/') {
-                        if (i != j) {
-                            v.push_back(arg.substr(i,j-i));
-                        }
-                        v.push_back(arg.substr(j,arg.length() - j));
-                        return v;
                 }
                 else {
                     indexOfInterest = j;
