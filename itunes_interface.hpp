@@ -19,9 +19,6 @@ class ItunesInterface: public Interface {
     ENUM_LOG loggingMode = ENUM_LOG::OFF;
     ENUM_READ readingMode = ENUM_READ::IDLE;
 
-    const std::string ERROR_OPEN_DOUBLE_QUOTE = "ERROR: Unenclosed double quotes";
-    const std::string ERROR_EMPTY_DOUBLE_QUOTE = "ERROR: Empty double quoted argument";
-
     void add(std::vector<std::string> args);
     void show(std::vector<std::string> args);
     void del(std::vector<std::string> args);

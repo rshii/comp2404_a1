@@ -10,10 +10,19 @@ using std::ifstream;
 using std::ofstream;
 
 vector<string> ItunesInterface::parseCommands(string arg) {
-    int indexOfInterest = 0;
     vector<string> v;
+    int indexOfInterest = 0;
 
-    if (arg.length() > 1 && arg.substr(0,2) == "//" && readingMode == ENUM_READ::READING) {
+    // truncates inline comment and includes in command log if not scripted
+    int commentPos = arg.find("//");
+    if (commentPos != -1) {
+        if (commentPos != 0) {
+            ItunesInterface::appendCommandLog(arg.substr(0, commentPos));
+        }
+        if (readingMode == ENUM_READ::IDLE) {
+            ItunesInterface::appendCommandLog(arg.substr(commentPos, arg.length() - commentPos));
+        }
+        arg = arg.substr(0, commentPos);
     }
     else {
         ItunesInterface::appendCommandLog(arg);
@@ -30,11 +39,11 @@ vector<string> ItunesInterface::parseCommands(string arg) {
                 }
             }
             if (indexOfInterest == i) {
-                ItunesInterface::appendOutputLog(ERROR_OPEN_DOUBLE_QUOTE);
+                ItunesInterface::appendOutputLog("ERROR: Unenclosed double quotes");
                 return vector<string> ();
             }
             else if (indexOfInterest == i + 1) {
-                ItunesInterface::appendOutputLog(ERROR_EMPTY_DOUBLE_QUOTE);
+                ItunesInterface::appendOutputLog("ERROR: Empty double quoted argument");
                 return vector<string> ();
             }
             else {
@@ -82,21 +91,6 @@ vector<string> ItunesInterface::parseCommands(string arg) {
 
 void ItunesInterface::executeCommands(vector<string> v) {
     if (v.size() == 0) {
-        ItunesInterface::appendOutputLog("ERROR: Nothing to execute");
-        return;
-    }
-
-    // extract and log comment, only used for cmdline comments,
-    // his instructions are unclear and this can be a case
-    // will be processed as an output
-    if (v.back().length() > 1 && v.back().substr(0,2) == "//") {
-        if (readingMode == ENUM_READ::IDLE) {
-            ItunesInterface::appendOutputLog(v.back());
-        }
-        v.pop_back();
-    }
-
-    if (v.size() == 0) {
         return;
     }
     string cmd = v[0];
@@ -118,16 +112,16 @@ void ItunesInterface::executeCommands(vector<string> v) {
     else if (cmd == ".log") {
         ItunesInterface::dot_log(v);
     }
-    else if (cmd == ".trim") {
+    else if (cmd == ".trim" && readingMode == ENUM_READ::IDLE) {
         ItunesInterface::dot_trim(v);
     }
-    else if (cmd == ".startsWith") {
+    else if (cmd == ".startsWith" && readingMode == ENUM_READ::IDLE) {
         ItunesInterface::dot_startsWith(v);
     }
-    else if (cmd == ".endsWith") {
+    else if (cmd == ".endsWith" && readingMode == ENUM_READ::IDLE) {
         ItunesInterface::dot_endsWith(v);
     }
-    else if (cmd == ".toTitleCase"){
+    else if (cmd == ".toTitleCase" && readingMode == ENUM_READ::IDLE){
         ItunesInterface::dot_toTitleCase(v);
     }
     else {
@@ -173,6 +167,15 @@ void ItunesInterface::dot_help() {
     cout<<"================================================="<<endl;
     cout<<"MyTunes music library"<<endl;
     cout<<"Command Language Version 0.1 (Alpha) Sept 2019"<<endl;
+    cout<<"Rev 1: 2019 10 08: change some song_id to track_id to reflect "<<endl;
+    cout<<"that playlists refer to tracks not songs i.e. title,composer etc."<<endl;
+    cout<<"Also modified the language to be consistent with the"<<endl;
+    cout<<"insert_beatles_tracks_rev2.txt insert script"<<endl;
+    cout<<""<<endl;
+    cout<<"Rev 2: 2019 10 09"<<endl;
+    cout<<"For consistency the delete commands have a -t version but the -s version still there"<<endl;
+    cout<<"but annotated as DEPRECATED which means you should still implement it."<<endl;
+    cout<<""<<endl;
     cout<<"================================================="<<endl;
     cout<<"COMMANDS:"<<endl;
     cout<<""<<endl;
@@ -184,8 +187,8 @@ void ItunesInterface::dot_help() {
     cout<<"    add -s song_id title composer //add song"<<endl;
     cout<<"	add -s 1001 \"Misery\" \"Paul McCartney, John Lennon\""<<endl;
     cout<<"    //add tracks"<<endl;
-    cout<<"    add -t album_id songID track_number"<<endl;
-    cout<<"    add -t 100 1000 1"<<endl;
+    cout<<"    add -t track_id album_id song_id track_number"<<endl;
+    cout<<"    add -t 10 100 1000 1"<<endl;
     cout<<"    //add users"<<endl;
     cout<<"    add -u user_id name"<<endl;
     cout<<"    add -u ajones \"Anne Jones\""<<endl;
@@ -193,17 +196,19 @@ void ItunesInterface::dot_help() {
     cout<<"    add -p user_id, playlist_name"<<endl;
     cout<<"    add -p ajones \"Driving Songs\""<<endl;
     cout<<"    //add playlist tracks"<<endl;
-    cout<<"    add -l user_id playlist_name song_id"<<endl;
+    cout<<"    add -l user_id playlist_name track_id"<<endl;
     cout<<"    add -l ajones \"Driving Songs\" 1001 "<<endl;
     cout<<"   "<<endl;
     cout<<"delete  //delete data from collections"<<endl;
-    cout<<"    delete -s song_id //delete song"<<endl;
-    cout<<"    delete -s song_id -p playlist_name -u user_name //delete song from playlist"<<endl;
-    cout<<"    delete -Global -s song_id -p playlist_name -u user_name"<<endl;
+    cout<<"    delete -s song_id //delete song based on song id (based on title, composer etc.)"<<endl;
+    cout<<"    delete -s track_id -p playlist_name -u user_name //DEPRECATED delete track from playlist"<<endl;
+    cout<<"    delete -t track_id -p playlist_name -u user_name //delete track from playlist"<<endl;
+    cout<<"    delete -Global -s track_id -p playlist_name -u user_name  //DEPRECATED but still supported"<<endl;
+    cout<<"    delete -Global -t track_id -p playlist_name -u user_name"<<endl;
     cout<<"    delete -r recording_id //delete recording "<<endl;
     cout<<"    delete -u user_id //delete user"<<endl;
     cout<<"    delete -p playist_name -u user_id //delete user playlist"<<endl;
-    cout<<"    delete -t song_id recording_id //delete track"<<endl;
+    cout<<"    delete -t track_id  //delete track"<<endl;
     cout<<""<<endl;
     cout<<"show    //show entries in collections"<<endl;
     cout<<"    show songs"<<endl;
@@ -240,14 +245,14 @@ void ItunesInterface::dot_help() {
     cout<<""<<endl;
     cout<<"DEVELOPER COMMANDS (NOT FOR PRODUCTION):"<<endl;
     cout<<"//These provide are to test certain developer functions"<<endl;
-    cout<<".trim    //trim the argument, ignores double quoted text"<<endl;
-    cout<<"	.trim a   day    ago \"  a   day ago\" //a day ago \"  a   day ago\"" <<endl;
-    cout<<".startsWith    //test string prefix, ignores formatting double quoted text"<<endl;
-    cout<<"	.startsWith \"Hello\" \"Hel\" //true"<<endl;
-    cout<<".endsWith    //test string suffix, ignores formatting double quoted text"<<endl;
-    cout<<"	.endsWith \"Hello\" \"llo\" //true"<<endl;
-    cout<<".toTitleCase    //returns title cased string, ignores formatting double quoted text"<<endl;
-    cout<<"	.toTitleCase \"the girl from ipanema\" //Girl From Ipanema, The"<<endl;
+    cout<<".trim    //trim the argument"<<endl;
+    cout<<"	.trim   a   day ago //a day ago"<<endl;
+    cout<<".startsWith    //test string prefix"<<endl;
+    cout<<"	.startsWith Hello Hel //true"<<endl;
+    cout<<".endsWith    //test string suffix"<<endl;
+    cout<<"	.endsWith Hello llo //true"<<endl;
+    cout<<".toTitleCase    //returns title cased string"<<endl;
+    cout<<"	.toTitleCase the girl from ipanema //Girl From Ipanema, The"<<endl;
     cout<<"=========================================================="<<endl;
     cout<<"=========================================================="<<endl;
 }
