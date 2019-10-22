@@ -240,7 +240,7 @@ void ItunesInterface::dot_help() {
     cout<<"     Any input starting with \"//\" or any output"<<endl;
     cout<<"     starting with \"//\" is treated as a comment."<<endl;
     cout<<"     If input on CLI the comment will be written to log file."<<endl;
-    cout<<"     Comments may appear in command script file."<<endl;
+    cout<<"     Comments may appear in command script file but they will not be logged."<<endl;
     cout<<""<<endl;
     cout<<"DEVELOPER COMMANDS (NOT FOR PRODUCTION):"<<endl;
     cout<<"//These provide are to test certain developer functions"<<endl;

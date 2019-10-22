@@ -1,5 +1,6 @@
 .log start_both
 //script comment
+.
 add -r 102 "A Hard Day's Night" "Beatles" "George Martin" 1964
 show -t 100 1000 1
 delete -u ajones "Anne Jones"
