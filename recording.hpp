@@ -1,30 +1,29 @@
-#ifndef RECORDING
-#define RECORDING
+#pragma once
 
 #include <string>
+#include <memory>
 #include <vector>
+class Track;
 
 class Recording {
-    int ID;
     int year;
     std::string title;
     std::string producer;
-    std::vector<int> tracks;
+    std::vector< std::shared_ptr < Track > > tracks;
 
     public:
-        Recording( int ID, std::string title, std::string producer, int year )
-          : ID( ID ),
-            title( title ),
+        Recording( std::string title, std::string producer, int year )
+          : title( title ),
             producer( producer ),
             year( year )
         {}
 
-        int getID();
         int getYear();
         std::string getTitle();
         std::string getProducer();
 
-        bool insert( int );
-        bool remove( int );
+        std::shared_ptr < Track > getTrack( int i );
+        bool insertTrack( int i, std::shared_ptr < Track > x );
+        bool removeTrack( int i );
+        void removeTrack( std::shared_ptr < Track > x );
 };
-#endif

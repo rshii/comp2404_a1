@@ -1,22 +1,31 @@
-#ifndef SONG
-#define SONG
+#pragma once
 
+#include <iostream>
 #include <string>
+#include <memory>
+#include <vector>
+class Track;
 
 class Song {
-    int ID;
     std::string title;
     std::string composer;
+    std::vector< std::weak_ptr< Track > > tracks;
 
     public:
-        Song( int ID, std::string title, std::string composer )
-          : ID( ID ),
-            title( title ),
+        Song( std::string title, std::string composer )
+          : title( title ),
             composer( composer )
-        {}
+        {
+            std::cout << "make song" << std::endl;
+        }
+        ~Song()
+        {
+            std::cout << "del song" << std::endl;
+        }
 
-        int getID();
         std::string getTitle();
         std::string getComposer();
+
+        void addTrack( std::shared_ptr< Track > );
+        void deleteTrack( std::shared_ptr< Track > );
 };
-#endif
