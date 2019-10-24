@@ -27,4 +27,10 @@ class User {
         std::weak_ptr< Playlist > getPlaylist( std::string playlistName );
         void makePlaylist( std::string playlistName, std::shared_ptr< User > user );
         void removePlaylist ( std::string playlistName ); 
+
+
+        friend std::ostream &operator<<( std::ostream &output, const User &x ) { 
+            output << "Name: " << x.name;
+            return output;            
+        }
 };

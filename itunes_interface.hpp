@@ -1,11 +1,23 @@
-#ifndef ITUNES_INTERFACE
-#define ITUNES_INTERFACE
+#pragma once
 
 #include "interface.hpp"
+#include <memory>
+#include <unordered_map>
+
+class Track;
+class Recording;
+class User;
+class Song;
+class Playlist;
 
 class ItunesInterface: public Interface {
 
     std::vector<std::string> loggingContainerVec;
+    std::unordered_map< int, std::shared_ptr< Track > > tracks;
+    std::unordered_map< int, std::shared_ptr< Recording > > recordings;
+    std::unordered_map< int, std::shared_ptr< User > > users;
+    std::unordered_map< int, std::shared_ptr< Song > > songs;
+
     enum class ENUM_LOG {
         OFF,
         COMMAND_ONLY,
@@ -38,5 +50,3 @@ class ItunesInterface: public Interface {
         std::vector<std::string> parseCommands(std::string arg);
         void executeCommands(std::vector<std::string>);
 };
-
-#endif

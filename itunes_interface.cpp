@@ -1,11 +1,16 @@
 #include "itunes_interface.hpp"
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include "user.hpp"
 
 using std::cout;
 using std::endl;
+using std::make_shared;
 using std::string;
 using std::vector;
+using std::unordered_map;
+using std::shared_ptr;
 using std::ifstream;
 using std::ofstream;
 
@@ -129,24 +134,55 @@ void ItunesInterface::executeCommands(vector<string> v) {
 }
 
 void ItunesInterface::add(vector<string> args) {
-    ItunesInterface::appendOutputLog("PARSED COMMAND:");
     if (args.size() < 2) {
         ItunesInterface::appendOutputLog("ERROR: more arguments required for add cmd");
         return;
     }
-    for (vector<string>::iterator it = args.begin(); it != args.end(); it++) {
-        ItunesInterface::appendOutputLog(*it);
+    if ( args[1] == "-r" ) {
+
+    }
+    else if (args [1] == "-s" ) {
+
+    }
+    else if (args [1] == "-t" ) {
+        
+    }
+    else if (args [1] == "-u" ) {
+        if (args.size() < 4) {
+            ItunesInterface::appendOutputLog("ERROR: requires user_id name");
+        }
+        else {
+            std::istringstream temp(args[2]);
+            int x;
+            if (temp >> x){
+                users[x] = make_shared< User > (args[3]);
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: user_id not parsable as int");
+            }
+        }
+    }
+    else if (args [1] == "-p" ) {
+        
+    }
+    else if (args [1] == "-l" ) {
+        
+    }
+    else {
+        ItunesInterface::appendOutputLog("ERROR: flag not supported: " + args[1]);
     }
 }
 
 void ItunesInterface::show(vector<string> args) {
-    ItunesInterface::appendOutputLog("PARSED COMMAND:");
     if (args.size() < 2) {
         ItunesInterface::appendOutputLog("ERROR: more arguments required for show cmd");
         return;
     }
-    for (vector<string>::iterator it = args.begin(); it != args.end(); it++) {
-        ItunesInterface::appendOutputLog(*it);
+    if (args[1] == "users") {
+        for (auto it = users.begin(); it != users.end(); ++it ) {
+            cout << "ID: " << it->first << endl;
+            cout << *(it->second) << endl;
+        }
     }
 }
 
