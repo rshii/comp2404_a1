@@ -1,1 +1,1 @@
-g++ main.cpp loophandler.cpp itunes_interface.cpp -std=c++11
+g++ main.cpp loophandler.cpp itunes_interface.cpp track.cpp recording.cpp song.cpp user.cpp playlist.cpp -std=c++11

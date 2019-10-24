@@ -9,7 +9,7 @@ class Recording {
     int year;
     std::string title;
     std::string producer;
-    std::vector< std::shared_ptr < Track > > tracks;
+    std::vector< std::weak_ptr < Track > > tracks;
 
     public:
         Recording( std::string title, std::string producer, int year )
@@ -21,9 +21,10 @@ class Recording {
         int getYear();
         std::string getTitle();
         std::string getProducer();
+        int size();
 
-        std::shared_ptr < Track > getTrack( int i );
-        bool insertTrack( int i, std::shared_ptr < Track > x );
+        std::weak_ptr < Track > getTrack( int i );
+        bool insertTrack( int i, std::shared_ptr < Track > x, std::shared_ptr< Recording > p );
         bool removeTrack( int i );
         void removeTrack( std::shared_ptr < Track > x );
 };

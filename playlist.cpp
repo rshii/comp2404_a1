@@ -11,6 +11,10 @@ string Playlist::getName() {
     return name;
 }
 
+int Playlist::size(){
+    return tracks.size();
+}
+
 weak_ptr< User > Playlist::getUser() {
     return user;
 }
@@ -44,8 +48,7 @@ void Playlist::removeTrack( shared_ptr< Track > x ) {
     for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
         auto temp = (*it).lock();
         if (temp == x) {
-            tracks.erase(it);
-            return;
+            tracks.erase(it--);
         }
     }
 }

@@ -33,6 +33,5 @@ class Track {
         void linkRecording( std::shared_ptr< Recording > );
         void delinkPlaylist( std::shared_ptr< Playlist >  );
         void delinkRecording( std::shared_ptr< Recording > );
-        std::vector< std::weak_ptr< Playlist > >  getLinkedPlaylists();
-        std::vector< std::weak_ptr< Recording > >  getLinkedRecordings();
+        void purgeFromPlaylistsRecordingsSong( std::shared_ptr< Track > );
 };

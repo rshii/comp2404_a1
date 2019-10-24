@@ -27,5 +27,5 @@ class Song {
         std::string getComposer();
 
         void addTrack( std::shared_ptr< Track > );
-        void deleteTrack( std::shared_ptr< Track > );
+        void removeTrack( std::shared_ptr< Track > );
 };

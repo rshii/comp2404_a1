@@ -16,7 +16,7 @@ void Song::addTrack( shared_ptr< Track > x ) {
     tracks.push_back(x);
 }
 
-void Song::deleteTrack( shared_ptr< Track > x ) {
+void Song::removeTrack( shared_ptr< Track > x ) {
     for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
         auto w = (*it).lock();
         if (w==x) {

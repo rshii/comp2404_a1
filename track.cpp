@@ -1,4 +1,7 @@
 #include "track.hpp"
+#include "recording.hpp"
+#include "playlist.hpp"
+#include "song.hpp"
 
 using std::remove;
 using std::weak_ptr;
@@ -42,10 +45,12 @@ void Track::delinkRecording( shared_ptr< Recording > x ) {
     }
 }
 
-vector< weak_ptr< Playlist > >  Track::getLinkedPlaylists() {
-    return playlists;
-}
-
-vector< weak_ptr< Recording > >  Track::getLinkedRecordings() {
-    return recordings;
+void Track::purgeFromPlaylistsRecordingsSong( shared_ptr< Track > x ) {
+    for (auto it = recordings.begin(); it != recordings.end(); it++ ) {
+        (*it).lock()->removeTrack( x );
+    }
+    for (auto it = playlists.begin(); it != playlists.end(); it++ ) {
+        (*it).lock()->removeTrack( x );
+    }
+    song.lock()->removeTrack( x );
 }
