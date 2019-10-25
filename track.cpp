@@ -55,7 +55,7 @@ std::ostream &operator<<( std::ostream &output, const Track &x ){
     if (x.playlists.size() != 0) {
         output << "<Associated with below playlists>" << endl;
         for (auto it = x.playlists.begin(); it != x.playlists.end(); ++it ) {
-            output << " : "(*it).lock()->getName() << endl;
+            output << (*it).lock()->getName() << endl;
         }
     }
     if (x.recordings.size() != 0) {

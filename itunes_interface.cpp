@@ -313,25 +313,60 @@ void ItunesInterface::show(vector<string> args) {
         }
     }
     else if (args[1] == "playlists") {
+        if (args.size() < 4) {
+                ItunesInterface::appendOutputLog("ERROR: missing arguments for show playlists -u userid");
+                return;
+        }
         if (args[2] == "-u") {
-            if (args.size() < 4) {
-                ItunesInterface::appendOutputLog("ERROR: missing user_id");
-            }
-            else {
                 if (users.find(args[3]) == users.end()) {
                     ItunesInterface::appendOutputLog("ERROR: user not found: " + args[3]);
                 }
                 else {
                     users[args[3]]->printPlaylists();
                 }
-            }
+        }
+        else {
+            ItunesInterface::appendOutputLog("ERROR: missing -u argument");
         }
     }
     else if (args[1] == "songs") {
-        for (auto it = songs.begin(); it != songs.end(); ++it ) {
-            cout << "==SONG==" << endl;
-            cout << "ID: " << it->first << endl;            
-            cout << *(it->second) << endl;            
+        if (args.size() > 5) {
+            string userId;
+            string playlistName;
+            if (args[2] == "-u" && args[4] == "-p") {
+                userId = args[3];
+                playlistName = args[5];
+            }
+            else if (args[4] == "-u" && args[2] == "-p") {
+                userId = args[5];
+                playlistName = args[3];
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: invalid flags");
+                return;
+            }
+            if (users.find(userId) == users.end()) {
+                ItunesInterface::appendOutputLog("ERROR: cannot find user id");
+                return;
+            }
+            auto pl = users[userId]->getPlaylist(playlistName).lock();
+            if (pl) {
+                cout << "==Playlist=="<<endl;
+                cout << (*pl) << endl;
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: cannot find playlist");
+            }
+        }
+        else if (args.size() > 2) {
+            ItunesInterface::appendOutputLog("ERROR: need more arguments show songs -u user -p playlist");
+        }
+        else {
+            for (auto it = songs.begin(); it != songs.end(); ++it ) {
+                cout << "==SONG==" << endl;
+                cout << "ID: " << it->first << endl;            
+                cout << *(it->second) << endl;            
+            }
         }
     }
     else if (args[1] == "recordings") {
