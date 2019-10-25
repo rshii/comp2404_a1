@@ -3,11 +3,7 @@
 #include "playlist.hpp"
 #include "song.hpp"
 
-using std::remove;
-using std::weak_ptr;
-using std::shared_ptr;
-using std::string;
-using std::vector;
+using namespace std;
 
 string Track::getURL() {
     return url;
@@ -51,4 +47,22 @@ void Track::purgeFromPlaylistsRecordingsSong( shared_ptr< Track > x ) {
         (*it).lock()->removeTrack( x );
     }
     song.lock()->removeTrack( x );
+}
+
+std::ostream &operator<<( std::ostream &output, const Track &x ){
+    output << "Song: " << x.song.lock()->getTitle() << endl;
+
+    if (x.playlists.size() != 0) {
+        output << "<Associated with below playlists>" << endl;
+        for (auto it = x.playlists.begin(); it != x.playlists.end(); ++it ) {
+            output << " : "(*it).lock()->getName() << endl;
+        }
+    }
+    if (x.recordings.size() != 0) {
+        output << "<Associated with below recorings>" << endl;
+        for (auto it = x.recordings.begin(); it != x.recordings.end(); ++it ) {
+            output <<  (*it).lock()->getTitle() << endl;
+        }
+    }
+    return output;
 }

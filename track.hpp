@@ -34,4 +34,6 @@ class Track {
         void delinkPlaylist( std::shared_ptr< Playlist >  );
         void delinkRecording( std::shared_ptr< Recording > );
         void purgeFromPlaylistsRecordingsSong( std::shared_ptr< Track > );
+
+        friend std::ostream &operator<<( std::ostream &output, const Track &x );
 };

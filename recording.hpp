@@ -36,4 +36,6 @@ class Recording {
         bool insertTrack( int i, std::shared_ptr < Track > x, std::shared_ptr< Recording > p );
         bool removeTrack( int i );
         void removeTrack( std::shared_ptr < Track > x );
+
+        friend std::ostream &operator<<( std::ostream &output, const Recording &x );
 };

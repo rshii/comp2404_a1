@@ -330,6 +330,21 @@ void ItunesInterface::show(vector<string> args) {
     else if (args[1] == "songs") {
         for (auto it = songs.begin(); it != songs.end(); ++it ) {
             cout << "==SONG==" << endl;
+            cout << "ID: " << it->first << endl;            
+            cout << *(it->second) << endl;            
+        }
+    }
+    else if (args[1] == "recordings") {
+        for (auto it = recordings.begin(); it != recordings.end(); ++it ) {
+            cout << "==ALBUM==" << endl;
+            cout << "ID: " << it->first << endl;            
+            cout << *(it->second) << endl;            
+        }
+    }
+    else if (args[1] == "tracks") {
+        for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
+            cout << "==TRACK==" << endl;
+            cout << "ID: " << it->first << endl;            
             cout << *(it->second) << endl;            
         }
     }

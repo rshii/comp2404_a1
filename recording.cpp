@@ -1,9 +1,7 @@
 #include "recording.hpp"
 #include "track.hpp"
 
-using std::string;
-using std::shared_ptr;
-using std::weak_ptr;
+using namespace std;
 
 int Recording::getYear(){
     return year;
@@ -53,4 +51,12 @@ void Recording::removeTrack( shared_ptr< Track > x ) {
             tracks.erase(it--);
         }
     }
+}
+
+std::ostream &operator<<( std::ostream &output, const Recording &x ){ 
+            output << "Title: " << x.title << endl;
+            output << "Artist: " << x.artist << endl;
+            output << "Producer: " << x.producer << endl;
+            output << "Year: " << x.year << endl;
+            return output;            
 }
