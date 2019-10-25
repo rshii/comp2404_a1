@@ -15,7 +15,7 @@ class ItunesInterface: public Interface {
     std::vector<std::string> loggingContainerVec;
     std::unordered_map< int, std::shared_ptr< Track > > tracks;
     std::unordered_map< int, std::shared_ptr< Recording > > recordings;
-    std::unordered_map< int, std::shared_ptr< User > > users;
+    std::unordered_map< std::string, std::shared_ptr< User > > users;
     std::unordered_map< int, std::shared_ptr< Song > > songs;
 
     enum class ENUM_LOG {

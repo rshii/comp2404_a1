@@ -29,8 +29,7 @@ void Track::delinkPlaylist( shared_ptr< Playlist >  x ) {
     for (auto it = playlists.begin(); it != playlists.end(); ++it ){
         auto w = (*it).lock();
         if (w == x) {
-            playlists.erase(it);
-            return;
+            playlists.erase(it--);
         }
     }
 }
@@ -39,8 +38,7 @@ void Track::delinkRecording( shared_ptr< Recording > x ) {
     for (auto it = recordings.begin(); it != recordings.end(); ++it ){
         auto w = (*it).lock();
         if (w == x) {
-            recordings.erase(it);
-            return;
+            recordings.erase(it--);
         }
     }
 }

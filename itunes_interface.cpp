@@ -3,16 +3,10 @@
 #include <fstream>
 #include <sstream>
 #include "user.hpp"
+#include "playlist.hpp"
+#include "song.hpp"
 
-using std::cout;
-using std::endl;
-using std::make_shared;
-using std::string;
-using std::vector;
-using std::unordered_map;
-using std::shared_ptr;
-using std::ifstream;
-using std::ofstream;
+using namespace std;
 
 vector<string> ItunesInterface::parseCommands(string arg) {
     vector<string> v;
@@ -141,31 +135,51 @@ void ItunesInterface::add(vector<string> args) {
     if ( args[1] == "-r" ) {
 
     }
-    else if (args [1] == "-s" ) {
-
+    else if (args[1] == "-s" ) {
+        if (args.size() < 5) {
+            ItunesInterface::appendOutputLog("ERROR: more arguments required for add song");
+        }
+        else {
+            istringstream ss(args[2]);
+            int temp_id;
+            if (ss >> temp_id) {
+                songs[temp_id] = make_shared< Song > (args[3], args[4]);
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: cannot parse song id as int");
+            }
+        }
     }
-    else if (args [1] == "-t" ) {
+    else if (args[1] == "-t" ) {
         
     }
-    else if (args [1] == "-u" ) {
+    else if (args[1] == "-u" ) {
         if (args.size() < 4) {
             ItunesInterface::appendOutputLog("ERROR: requires user_id name");
         }
         else {
-            std::istringstream temp(args[2]);
-            int x;
-            if (temp >> x){
-                users[x] = make_shared< User > (args[3]);
+            if (users.find(args[2]) == users.end()) {
+                users[args[2]] = make_shared< User > (args[3]);
             }
             else {
-                ItunesInterface::appendOutputLog("ERROR: user_id not parsable as int");
+                ItunesInterface::appendOutputLog("ERROR: user_id already taken");
             }
         }
     }
-    else if (args [1] == "-p" ) {
-        
+    else if (args[1] == "-p" ) {
+        if (args.size() < 4) {
+            ItunesInterface::appendOutputLog("ERROR: requires playlist_name");
+        }
+        else {
+            if (users.find(args[2]) == users.end()) {
+                ItunesInterface::appendOutputLog("ERROR: user not found: " + args[2]);
+            }
+            else {
+                users[args[2]]->makePlaylist(args[3], users[args[2]]);
+            }
+        }
     }
-    else if (args [1] == "-l" ) {
+    else if (args[1] == "-l" ) {
         
     }
     else {
@@ -180,21 +194,54 @@ void ItunesInterface::show(vector<string> args) {
     }
     if (args[1] == "users") {
         for (auto it = users.begin(); it != users.end(); ++it ) {
+            cout << "==USER==" << it->first << endl;
             cout << "ID: " << it->first << endl;
             cout << *(it->second) << endl;
+        }
+    }
+    else if (args[1] == "playlists") {
+        if (args[2] == "-u") {
+            if (args.size() < 4) {
+                ItunesInterface::appendOutputLog("ERROR: missing user_id");
+            }
+            else {
+                if (users.find(args[3]) == users.end()) {
+                    ItunesInterface::appendOutputLog("ERROR: user not found: " + args[3]);
+                }
+                else {
+                    users[args[3]]->printPlaylists();
+                }
+            }
+        }
+        else {
+            ItunesInterface::appendOutputLog("ERROR: invalid flag");
         }
     }
 }
 
 void ItunesInterface::del(vector<string> args) {
-    ItunesInterface::appendOutputLog("PARSED COMMAND:");
-    if (args.size() < 2) {
-        ItunesInterface::appendOutputLog("ERROR: more arguments required for delete cmd");
-        return;
-    }
-    for (vector<string>::iterator it = args.begin(); it != args.end(); it++) {
-        ItunesInterface::appendOutputLog(*it);
-    }
+    // if (args.size() < 3) {
+    //     ItunesInterface::appendOutputLog("ERROR: more arguments required for delete cmd");
+    //     return;
+    // }
+    // if (args[1] == "-u") {
+    //     if (users.find(args[2]) == users.end()) {
+    //         ItunesInterface::appendOutputLog("ERROR: cannot find user of id: " + args[2]);
+    //     }
+    //     else {
+    //         users[args[2]]->clearReferences(users[args[2]]);
+    //         users.erase(args[2]);
+    //     }
+    // }
+    // else if (args[1] == "-p") {
+    //     if (args.size() < 5) {
+    //         ItunesInterface::appendOutputLog("ERROR: not enough arguments");
+    //         if (args[])
+    //     }
+    // }
+    // else {
+    //     ItunesInterface::appendOutputLog("ERROR: invalid flag");
+    // }
 }
 
 void ItunesInterface::dot_help() {

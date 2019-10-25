@@ -52,3 +52,9 @@ void Playlist::removeTrack( shared_ptr< Track > x ) {
         }
     }
 }
+
+void Playlist::killFromSuper( shared_ptr< Playlist > x ) {
+    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
+        (*it).lock()->delinkPlaylist( x );
+    }
+}

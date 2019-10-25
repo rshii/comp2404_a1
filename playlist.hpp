@@ -30,4 +30,6 @@ class Playlist {
         bool insertTrack( int i, std::shared_ptr< Track > x, std::shared_ptr< Playlist > p );
         bool removeTrack( int i );
         void removeTrack( std::shared_ptr< Track > x );
+
+        void killFromSuper(std::shared_ptr< Playlist > p);
 };
