@@ -23,16 +23,11 @@ class Playlist {
           std::cout << "del play" << std::endl;
         }
 
+        int size();
         std::string getName();
         std::weak_ptr< User > getUser();
         std::weak_ptr< Track > getTrack( int i );
-        std::vector< std::weak_ptr< Track > > getAllTracks();
-        int size();
         void appendTrack( std::shared_ptr< Track > x, std::shared_ptr< Playlist > p );
-        bool removeTrack( int i );
-        void removeTrack( std::shared_ptr< Track > x );
-
-        void killFromSuper(std::shared_ptr< Playlist > p);
 
         friend std::ostream &operator<<( std::ostream &output, const Playlist &x );
 };

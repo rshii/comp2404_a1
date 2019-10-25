@@ -24,37 +24,10 @@ weak_ptr< Track > Playlist::getTrack( int i ) {
     return tracks[i];
 }
 
-vector< weak_ptr< Track > > Playlist::getAllTracks() {
-    return tracks;
-}
-
 void Playlist::appendTrack( shared_ptr< Track > x, shared_ptr< Playlist > pl) {
     weak_ptr< Track > w = x;
     tracks.push_back( w );
     x->linkPlaylist( pl );
-}
-
-bool Playlist::removeTrack( int i ) {
-    if ( i < 0 || i >= tracks.size() ) {
-        return false;
-    }
-    tracks.erase( tracks.begin()+i );
-    return true;
-}
-
-void Playlist::removeTrack( shared_ptr< Track > x ) {
-    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
-        auto temp = (*it).lock();
-        if (temp == x) {
-            tracks.erase(it--);
-        }
-    }
-}
-
-void Playlist::killFromSuper( shared_ptr< Playlist > x ) {
-    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
-        (*it).lock()->delinkPlaylist( x );
-    }
 }
 
 std::ostream &operator<<( std::ostream &output, const Playlist &x ){ 

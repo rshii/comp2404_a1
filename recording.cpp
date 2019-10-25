@@ -36,23 +36,6 @@ bool Recording::insertTrack( int i, shared_ptr< Track > x, shared_ptr< Recording
     return true;
 }
 
-bool Recording::removeTrack( int i ) {
-    if ( i < 0 || i >= tracks.size() ) {
-        return false;
-    }
-    tracks.erase( tracks.begin()+i );
-    return true;
-}
-
-void Recording::removeTrack( shared_ptr< Track > x ) {
-    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
-        auto temp = (*it).lock();
-        if (temp == x) {
-            tracks.erase(it--);
-        }
-    }
-}
-
 std::ostream &operator<<( std::ostream &output, const Recording &x ){ 
             output << "Title: " << x.title << endl;
             output << "Artist: " << x.artist << endl;

@@ -31,9 +31,6 @@ class Track {
         std::weak_ptr< Song > getSong();
         void linkPlaylist( std::shared_ptr< Playlist > );
         void linkRecording( std::shared_ptr< Recording > );
-        void delinkPlaylist( std::shared_ptr< Playlist >  );
-        void delinkRecording( std::shared_ptr< Recording > );
-        void purgeFromPlaylistsRecordingsSong( std::shared_ptr< Track > );
 
         friend std::ostream &operator<<( std::ostream &output, const Track &x );
 };

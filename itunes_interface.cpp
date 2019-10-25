@@ -389,10 +389,10 @@ void ItunesInterface::show(vector<string> args) {
 }
 
 void ItunesInterface::del(vector<string> args) {
-    // if (args.size() < 3) {
-    //     ItunesInterface::appendOutputLog("ERROR: more arguments required for delete cmd");
-    //     return;
-    // }
+    if (args.size() < 3) {
+        ItunesInterface::appendOutputLog("ERROR: more arguments required for delete cmd");
+        return;
+    }
     // if (args[1] == "-u") {
     //     if (users.find(args[2]) == users.end()) {
     //         ItunesInterface::appendOutputLog("ERROR: cannot find user of id: " + args[2]);
@@ -405,7 +405,6 @@ void ItunesInterface::del(vector<string> args) {
     // else if (args[1] == "-p") {
     //     if (args.size() < 5) {
     //         ItunesInterface::appendOutputLog("ERROR: not enough arguments");
-    //         if (args[])
     //     }
     // }
     // else {

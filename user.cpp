@@ -20,22 +20,6 @@ void User::makePlaylist( string playlistName, shared_ptr< User > user ) {
     playlists.push_back( make_shared< Playlist > (playlistName, user));
 }
 
-void User::removePlaylist( string playlistName ) {
-    for ( auto it = playlists.begin(); it != playlists.end(); it++ ) {
-        if ( ( *it )->getName() == playlistName ) {
-            playlists.erase(it);
-            break;
-        }
-    }
-}
-
-void User::clearReferences( shared_ptr< User > u ) {
-    for (auto it = playlists.begin(); it != playlists.end(); ++it ) {
-        (*it)->killFromSuper((*it));
-    }
-    playlists.clear();
-}
-
 void User::printPlaylists() {
     cout << "Owned playlists:" << endl;
     for (auto it = playlists.begin(); it != playlists.end(); ++it ) {

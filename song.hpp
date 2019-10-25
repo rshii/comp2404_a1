@@ -27,7 +27,6 @@ class Song {
         std::string getComposer();
 
         void addTrack( std::shared_ptr< Track > );
-        void removeTrack( std::shared_ptr< Track > );
 
         friend std::ostream &operator<<( std::ostream &output, const Song &x );
 };

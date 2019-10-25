@@ -21,34 +21,6 @@ void Track::linkRecording( shared_ptr< Recording > x ) {
     recordings.push_back( x );
 }
 
-void Track::delinkPlaylist( shared_ptr< Playlist >  x ) {
-    for (auto it = playlists.begin(); it != playlists.end(); ++it ){
-        auto w = (*it).lock();
-        if (w == x) {
-            playlists.erase(it--);
-        }
-    }
-}
-
-void Track::delinkRecording( shared_ptr< Recording > x ) {
-    for (auto it = recordings.begin(); it != recordings.end(); ++it ){
-        auto w = (*it).lock();
-        if (w == x) {
-            recordings.erase(it--);
-        }
-    }
-}
-
-void Track::purgeFromPlaylistsRecordingsSong( shared_ptr< Track > x ) {
-    for (auto it = recordings.begin(); it != recordings.end(); it++ ) {
-        (*it).lock()->removeTrack( x );
-    }
-    for (auto it = playlists.begin(); it != playlists.end(); it++ ) {
-        (*it).lock()->removeTrack( x );
-    }
-    song.lock()->removeTrack( x );
-}
-
 std::ostream &operator<<( std::ostream &output, const Track &x ){
     output << "Song: " << x.song.lock()->getTitle() << endl;
 

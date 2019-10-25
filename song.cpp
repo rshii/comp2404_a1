@@ -14,16 +14,6 @@ void Song::addTrack( shared_ptr< Track > x ) {
     tracks.push_back(x);
 }
 
-void Song::removeTrack( shared_ptr< Track > x ) {
-    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
-        auto w = (*it).lock();
-        if (w==x) {
-            tracks.erase(it);
-            return;
-        }
-    }
-}
-
 std::ostream &operator<<( std::ostream &output, const Song &x ){ 
             output << "Song title: " << x.title << endl;
             output << "Song Composer: " << x.composer << endl;
