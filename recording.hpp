@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <iostream>
 class Track;
 
 class Recording {
@@ -16,7 +17,13 @@ class Recording {
           : title( title ),
             producer( producer ),
             year( year )
-        {}
+        {
+          std::cout << "make recording" << std::endl;
+        }
+        ~Recording()
+        {
+          std::cout << "del recording" << std::endl;
+        }
 
         int getYear();
         std::string getTitle();

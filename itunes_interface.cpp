@@ -2,9 +2,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 #include "user.hpp"
 #include "playlist.hpp"
 #include "song.hpp"
+#include "recording.hpp"
+#include "track.hpp"
 
 using namespace std;
 
@@ -133,7 +136,31 @@ void ItunesInterface::add(vector<string> args) {
         return;
     }
     if ( args[1] == "-r" ) {
-
+        if (args.size() < 5) {
+            ItunesInterface::appendOutputLog("ERROR: more arguments required for add recording");
+        }
+        else {
+            istringstream ss(args[2]);
+            int temp_id;
+            if (ss >> temp_id) {
+                if (recordings.find(temp_id) == recordings.end()) {
+                    istringstream ss2(args[5]);
+                    int year;
+                    if (ss2 >> year) {
+                        recordings[temp_id] = make_shared< Recording > (args[3], args[4], year);
+                    }
+                    else {
+                        ItunesInterface::appendOutputLog("ERROR: cannot parse year as int");
+                    }
+                }
+                else {
+                    ItunesInterface::appendOutputLog("ERROR: recording with given id already in memory");
+                }
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: cannot parse recording id as int");
+            }
+        }
     }
     else if (args[1] == "-s" ) {
         if (args.size() < 5) {
@@ -143,7 +170,12 @@ void ItunesInterface::add(vector<string> args) {
             istringstream ss(args[2]);
             int temp_id;
             if (ss >> temp_id) {
-                songs[temp_id] = make_shared< Song > (args[3], args[4]);
+                if (songs.find(temp_id) == songs.end()) {
+                    songs[temp_id] = make_shared< Song > (args[3], args[4]);
+                }
+                else {
+                    ItunesInterface::appendOutputLog("ERROR: song with given id already in memory");
+                }
             }
             else {
                 ItunesInterface::appendOutputLog("ERROR: cannot parse song id as int");
@@ -151,7 +183,47 @@ void ItunesInterface::add(vector<string> args) {
         }
     }
     else if (args[1] == "-t" ) {
-        
+        if (args.size() < 6) {
+            ItunesInterface::appendOutputLog("ERROR: requires more arguments for add track");
+        }
+        else {
+            vector<int> v {0,0,0,0};
+            int count = 0;
+            for (auto it = args.begin() + 2; it != args.end(); ++it ) {
+                istringstream ss(*it);
+                if (ss >> v[count]) {
+
+                }
+                else {
+                    ItunesInterface::appendOutputLog("ERROR: arguments invalid");
+                    return;
+                }
+                ++count;
+            }
+            if (tracks.find(v[0]) == tracks.end()) {
+                if (recordings.find(v[1]) == recordings.end()) {
+                    ItunesInterface::appendOutputLog("ERROR: cannot find album id");
+                    cout << v[1] << endl;
+                }
+                else {
+                    if (songs.find(v[2]) == songs.end()) {
+                        ItunesInterface::appendOutputLog("ERROR: cannot find song id");
+                    }
+                    else {
+                        if (v[3] > recordings[v[1]]->size() + 1 || v[3] < 1) {
+                            ItunesInterface::appendOutputLog("ERROR: out of bounds insert on album");
+                        }
+                        else {
+                            tracks[v[0]] = make_shared< Track >( songs[v[2]] );
+                            recordings[v[1]]->insertTrack(v[3]-1, tracks[v[0]], recordings[v[1]]);
+                        }
+                    }
+                }
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: track id already exists");
+            }
+        }
     }
     else if (args[1] == "-u" ) {
         if (args.size() < 4) {
@@ -175,7 +247,12 @@ void ItunesInterface::add(vector<string> args) {
                 ItunesInterface::appendOutputLog("ERROR: user not found: " + args[2]);
             }
             else {
-                users[args[2]]->makePlaylist(args[3], users[args[2]]);
+                if (users[args[2]]->getPlaylist(args[3]).lock()) {
+                    ItunesInterface::appendOutputLog("ERROR: Playlist already exists: " + args[3]);
+                }
+                else {
+                    users[args[2]]->makePlaylist(args[3], users[args[2]]);
+                }
             }
         }
     }
@@ -194,7 +271,7 @@ void ItunesInterface::show(vector<string> args) {
     }
     if (args[1] == "users") {
         for (auto it = users.begin(); it != users.end(); ++it ) {
-            cout << "==USER==" << it->first << endl;
+            cout << "==USER==" << endl;
             cout << "ID: " << it->first << endl;
             cout << *(it->second) << endl;
         }
