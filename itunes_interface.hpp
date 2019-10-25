@@ -44,7 +44,7 @@ class ItunesInterface: public Interface {
     void dot_trim(std::vector<std::string> args);
     void dot_startsWith(std::vector<std::string> args);
     void dot_endsWith(std::vector<std::string> args);
-    void dot_toTitleCase(std::vector<std::string> args);
+    std::string dot_toTitleCase(std::string args);
 
     public:
         std::vector<std::string> parseCommands(std::string arg);

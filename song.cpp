@@ -1,9 +1,7 @@
 #include "song.hpp"
 #include "track.hpp"
 
-using std::shared_ptr;
-using std::string;
-using std::weak_ptr;
+using namespace std;
 
 string Song::getTitle() {
     return title;
@@ -24,4 +22,10 @@ void Song::removeTrack( shared_ptr< Track > x ) {
             return;
         }
     }
+}
+
+std::ostream &operator<<( std::ostream &output, const Song &x ){ 
+            output << "Song title: " << x.title << endl;
+            output << "Song Composer: " << x.composer << endl;
+            return output;            
 }

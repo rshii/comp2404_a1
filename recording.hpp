@@ -9,12 +9,14 @@ class Track;
 class Recording {
     int year;
     std::string title;
+    std::string artist;
     std::string producer;
     std::vector< std::weak_ptr < Track > > tracks;
 
     public:
-        Recording( std::string title, std::string producer, int year )
+        Recording( std::string title, std::string artist, std::string producer, int year )
           : title( title ),
+            artist( artist ),
             producer( producer ),
             year( year )
         {

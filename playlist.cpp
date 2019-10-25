@@ -26,14 +26,10 @@ weak_ptr< Track > Playlist::getTrack( int i ) {
     return tracks[i];
 }
 
-bool Playlist::insertTrack( int i, shared_ptr< Track > x, shared_ptr< Playlist > pl) {
-    if ( i < 0 || i > tracks.size() ) {
-        return false;
-    }
+void Playlist::appendTrack( shared_ptr< Track > x, shared_ptr< Playlist > pl) {
     weak_ptr< Track > w = x;
-    tracks.insert( tracks.begin()+i, w);
-    x->linkPlaylist(pl);
-    return true;
+    tracks.push_back( w );
+    x->linkPlaylist( pl );
 }
 
 bool Playlist::removeTrack( int i ) {

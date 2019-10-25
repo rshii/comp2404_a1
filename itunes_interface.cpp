@@ -122,8 +122,8 @@ void ItunesInterface::executeCommands(vector<string> v) {
     else if (cmd == ".endsWith") {
         ItunesInterface::dot_endsWith(v);
     }
-    else if (cmd == ".toTitleCase"){
-        ItunesInterface::dot_toTitleCase(v);
+    else if (cmd == ".toTitleCase" && v.size() > 1){
+        ItunesInterface::dot_toTitleCase(v[1]);
     }
     else {
         ItunesInterface::appendOutputLog("ERROR: Invalid command: " + cmd);
@@ -136,7 +136,7 @@ void ItunesInterface::add(vector<string> args) {
         return;
     }
     if ( args[1] == "-r" ) {
-        if (args.size() < 5) {
+        if (args.size() < 7) {
             ItunesInterface::appendOutputLog("ERROR: more arguments required for add recording");
         }
         else {
@@ -144,10 +144,15 @@ void ItunesInterface::add(vector<string> args) {
             int temp_id;
             if (ss >> temp_id) {
                 if (recordings.find(temp_id) == recordings.end()) {
-                    istringstream ss2(args[5]);
+                    istringstream ss2(args[6]);
                     int year;
                     if (ss2 >> year) {
-                        recordings[temp_id] = make_shared< Recording > (args[3], args[4], year);
+                        recordings[temp_id] = make_shared< Recording > (
+                            dot_toTitleCase(args[3]),
+                            dot_toTitleCase(args[4]),
+                            dot_toTitleCase(args[5]),
+                            year
+                        );
                     }
                     else {
                         ItunesInterface::appendOutputLog("ERROR: cannot parse year as int");
@@ -171,7 +176,10 @@ void ItunesInterface::add(vector<string> args) {
             int temp_id;
             if (ss >> temp_id) {
                 if (songs.find(temp_id) == songs.end()) {
-                    songs[temp_id] = make_shared< Song > (args[3], args[4]);
+                    songs[temp_id] = make_shared< Song > (
+                        dot_toTitleCase(args[3]),
+                        dot_toTitleCase(args[4])
+                    );
                 }
                 else {
                     ItunesInterface::appendOutputLog("ERROR: song with given id already in memory");
@@ -257,7 +265,35 @@ void ItunesInterface::add(vector<string> args) {
         }
     }
     else if (args[1] == "-l" ) {
-        
+        if (args.size() < 5) {
+            ItunesInterface::appendOutputLog("ERROR: add playlist tracks needs more arguments");
+        }
+        else {
+            istringstream ss(args[4]);
+            int temp_id;
+            if (ss >> temp_id ) {
+                if (users.find(args[2]) == users.end()){
+                    ItunesInterface::appendOutputLog("ERROR: could not find user: " + args[2]);
+                }
+                else {
+                    auto temp = users[args[2]]->getPlaylist(args[3]).lock();
+                    if (temp) {
+                        if (tracks.find(temp_id) == tracks.end()) {
+                            ItunesInterface::appendOutputLog("ERROR: could not find track");
+                        }
+                        else {
+                            temp->appendTrack(tracks[temp_id], temp);
+                        }
+                    }
+                    else {
+                        ItunesInterface::appendOutputLog("ERROR: could not find playlist: " + args[3]);
+                    }
+                }
+            }
+            else {
+                ItunesInterface::appendOutputLog("ERROR: could not parse track id as int");
+            }
+        }
     }
     else {
         ItunesInterface::appendOutputLog("ERROR: flag not supported: " + args[1]);
@@ -290,9 +326,15 @@ void ItunesInterface::show(vector<string> args) {
                 }
             }
         }
-        else {
-            ItunesInterface::appendOutputLog("ERROR: invalid flag");
+    }
+    else if (args[1] == "songs") {
+        for (auto it = songs.begin(); it != songs.end(); ++it ) {
+            cout << "==SONG==" << endl;
+            cout << *(it->second) << endl;            
         }
+    }
+    else {
+        ItunesInterface::appendOutputLog("ERROR: invalid flag");
     }
 }
 
@@ -555,33 +597,42 @@ void ItunesInterface::dot_endsWith(vector<string> args) {
     }
 }
 
-void ItunesInterface::dot_toTitleCase(vector<string> args) {
-    if (args.size() < 2) {
-        ItunesInterface::appendOutputLog("ERROR: .toTitleCase needs at least one argument");
-        return;
-    }
-    args.erase(args.begin());
-    for (int i = 0; i < args.size(); i++) {
-        for (int j = 0; j < args[i].length(); j++) {
-            args[i][j] = tolower(args[i][j]);
+string ItunesInterface::dot_toTitleCase(string s) {
+    string build = "";
+    bool spaced = s[0]==' ';
+    for ( int i = 0; i < s.length(); i++ ) {
+        if (spaced) {
+            if (s[i]==' ') {
+                spaced = true;
+            }
+            else {
+                spaced = false;
+                build += toupper(s[i]);
+            }
+        }
+        else {
+            if (s[i] == ' ') {
+                spaced = true;
+            }
+            else {
+                spaced = false;
+            }
+            if (i == 0) {
+                build += toupper(s[i]);
+            }
+            else {
+                build += tolower(s[i]);
+            }
         }
     }
-    if (args[0] == "the") {
-        args[args.size() - 1] += ",";
-        args.erase(args.begin());
-        args.push_back("the");
+    if (build[build.length() - 1] == ' ') {
+        build = build.substr(0,build.length() - 1);
     }
-    for (int i = 0; i < args.size(); i++) {
-        args[i][0] = toupper(args[i][0]);
+    if (build.length() > 4 && build.substr(0,4) == "The ") {
+        build = build.substr(4, build.length()-4);
+        build += ", The";
     }
-
-    string titlecase = "";
-    cout << "WARNING: Double quoted strings are not delimited, use unquoted arguments to format" << endl;
-    for (int i = 0; i < args.size(); i++) {
-        titlecase += args[i];
-        if (i < args.size() - 1) {
-            titlecase += " ";
-        }
-    }
-    ItunesInterface::appendOutputLog("Titlecase output: " + titlecase);
+    cout << build << endl;
+    cout << build.length() << endl;
+	return build;
 }
