@@ -21,6 +21,23 @@ void Track::linkRecording( shared_ptr< Recording > x ) {
     recordings.push_back( x );
 }
 
+void Track::delinkPlaylist( std::shared_ptr< Playlist > x ) {
+    for ( auto it = playlists.begin(); it != playlists.end(); ++it ) {
+        auto w = (*it).lock();
+        if (w==x) {
+            playlists.erase(it--);
+        }
+    }
+}
+void Track::delinkRecording( std::shared_ptr< Recording > x ) {
+    for ( auto it = recordings.begin(); it != recordings.end(); ++it ) {
+        auto w = (*it).lock();
+        if (w==x) {
+            recordings.erase(it--);
+        }
+    }
+}
+
 void Track::purgeTrack( std::shared_ptr< Track > x ) {
     song.lock()->delinkTrack( x );
     for (auto it = recordings.begin(); it != recordings.end(); ++it ) {
