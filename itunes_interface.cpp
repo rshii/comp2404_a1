@@ -442,7 +442,7 @@ void ItunesInterface::del(vector<string> args) {
         if (it == args.end()) {
             it = find(args.begin(), args.end(), "-s");
         }
-        if (distance(args.begin(), it) > args.size() - 1) {
+        if (distance(args.begin(), it) > args.size() - 2) {
             ItunesInterface::appendOutputLog("ERROR: missing -s or -t id");
             return;
         }
@@ -457,13 +457,13 @@ void ItunesInterface::del(vector<string> args) {
             return;
         }
         it = find(args.begin(), args.end(), "-p");
-        if (distance(args.begin(), it) > args.size() - 1) {
+        if (distance(args.begin(), it) > args.size() - 2) {
             ItunesInterface::appendOutputLog("ERROR: missing -p playlistname");
             return;
         }
         string plname = *(++it);
         it = find(args.begin(), args.end(), "-u");
-        if (distance(args.begin(), it) > args.size() - 1) {
+        if (distance(args.begin(), it) > args.size() - 2) {
             ItunesInterface::appendOutputLog("ERROR: missing -u userId");
             return;
         }
@@ -503,6 +503,56 @@ void ItunesInterface::del(vector<string> args) {
             }
             songs.erase(songid);
         }
+    }
+    else if (args[1] == "-r") {
+        istringstream ss(args[2]);
+        int recordingid;
+        if (!(ss >> recordingid)) {
+            ItunesInterface::appendOutputLog("ERROR: cannot parse recording id as int");
+            return;
+        }
+        if (recordings.find(recordingid) == recordings.end()) {
+            ItunesInterface::appendOutputLog("ERROR: cannot find recording");
+            return;
+        }
+        recordings[recordingid]->purge(recordings[recordingid]);
+        recordings.erase(recordingid);
+    }
+    else if (args.size() == 5) {
+        auto pl = find(args.begin(), args.end(), "-p");
+        if (distance(args.begin(), pl) > args.size() - 2) {
+            ItunesInterface::appendOutputLog("ERROR: missing -p playlist");
+            return;
+        }
+        auto uid = find(args.begin(), args.end(), "-u");
+        if (distance(args.begin(), uid) > args.size() - 2) {
+            ItunesInterface::appendOutputLog("ERROR: missing -u username");
+            return;
+        }
+        pl++;
+        uid++;
+        if (users.find(*uid) == users.end()) {
+            ItunesInterface::appendOutputLog("ERROR: cannot find user");
+            return;
+        }
+        auto foundpl = users[*uid]->getPlaylist(*pl).lock();
+        if (!(foundpl)) {
+            ItunesInterface::appendOutputLog("ERROR: cannot find playlist");
+            return;
+        }
+        auto foundUser = users[*uid];
+        foundUser->deletePlaylist(foundpl);
+    }
+    else if (args[1] == "-u") {
+        if (users.find(args[2]) == users.end()) {
+            ItunesInterface::appendOutputLog("ERROR: cannot find user");
+            return;
+        }
+        auto pls = users[args[2]]->getPlaylists();
+        for (auto it = pls.begin(); it != pls.end(); ++it ) {
+            users[args[2]]->deletePlaylist(*it);
+        }
+        users.erase(args[2]);
     }
 }
 

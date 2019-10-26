@@ -16,8 +16,17 @@ weak_ptr< Playlist > User::getPlaylist( string playlistName ) {
     return weak_ptr< Playlist >();
 }
 
+vector< shared_ptr< Playlist > > User::getPlaylists() {
+    return playlists;
+}
+
 void User::makePlaylist( string playlistName, shared_ptr< User > user ) {
     playlists.push_back( make_shared< Playlist > (playlistName, user));
+}
+
+void User::deletePlaylist( shared_ptr< Playlist > x ) {
+    x->purge( x );
+    playlists.erase(find(playlists.begin(), playlists.end(), x));
 }
 
 void User::printPlaylists() {

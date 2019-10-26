@@ -25,8 +25,10 @@ class User {
 
         std::string getName();
         std::weak_ptr< Playlist > getPlaylist( std::string playlistName );
+        std::vector< std::shared_ptr< Playlist > > getPlaylists();
         void printPlaylists();
         void makePlaylist( std::string playlistName, std::shared_ptr< User > user );
+        void deletePlaylist( std::shared_ptr< Playlist > );
 
         friend std::ostream &operator<<( std::ostream &output, const User &x );
 };

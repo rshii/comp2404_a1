@@ -46,6 +46,12 @@ void Recording::delinkTrack( std::shared_ptr < Track > x ) {
     }
 }
 
+void Recording::purge( std::shared_ptr < Recording > x ) {
+    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
+        (*it).lock()->delinkRecording( x );
+    }
+}
+
 std::ostream &operator<<( std::ostream &output, const Recording &x ){ 
             output << "Title: " << x.title << endl;
             output << "Artist: " << x.artist << endl;

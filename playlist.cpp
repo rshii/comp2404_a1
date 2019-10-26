@@ -39,6 +39,13 @@ void Playlist::delinkTrack( std::shared_ptr < Track > x ) {
     }
 }
 
+void Playlist::purge( std::shared_ptr < Playlist > x) {
+    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
+        auto w = (*it).lock();
+        w->delinkPlaylist(x);
+    }
+}
+
 std::ostream &operator<<( std::ostream &output, const Playlist &x ){ 
             output << "Playlist name: " << x.name << endl;
             output << "Owned by: " << x.user.lock()->getName() << endl;
