@@ -23,6 +23,10 @@ void Song::delinkTrack( std::shared_ptr < Track > x ) {
     }
 }
 
+vector< weak_ptr< Track > > Song::getTracks() {
+    return tracks;
+}
+
 std::ostream &operator<<( std::ostream &output, const Song &x ){ 
             output << "Song title: " << x.title << endl;
             output << "Song Composer: " << x.composer << endl;

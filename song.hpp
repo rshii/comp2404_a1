@@ -28,6 +28,7 @@ class Song {
 
         void addTrack( std::shared_ptr< Track > );
         void delinkTrack( std::shared_ptr< Track >  );
+        std::vector< std::weak_ptr< Track > > getTracks();
 
         friend std::ostream &operator<<( std::ostream &output, const Song &x );
 };

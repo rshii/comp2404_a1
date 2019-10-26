@@ -480,6 +480,30 @@ void ItunesInterface::del(vector<string> args) {
         pl->delinkTrack( tracks[trackid] );
         tracks[trackid]->delinkPlaylist(pl);
     }
+    else if (args[1] == "-s") {
+        istringstream ss(args[2]);
+        int songid;
+        if (!(ss >> songid)) {
+            ItunesInterface::appendOutputLog("ERROR: cannot parse song id as int");
+            return;
+        }
+        if (songs.find(songid) == songs.end()) {
+            ItunesInterface::appendOutputLog("ERROR: cannot find song");
+            return;
+        }
+        auto songTracks = songs[songid]->getTracks();
+        for (auto it = songTracks.begin(); it != songTracks.end(); ++it ) {
+            auto w = (*it).lock();
+            w->purgeTrack(w);
+            for (auto t = tracks.begin(); t != tracks.end(); ++t ){
+                if (w==(t->second)) {
+                    tracks.erase(t);
+                    break;
+                }
+            }
+            songs.erase(songid);
+        }
+    }
 }
 
 void ItunesInterface::dot_help() {
