@@ -137,7 +137,7 @@ void ItunesInterface::add(vector<string> args) {
     }
     if ( args[1] == "-r" ) {
         if (args.size() < 7) {
-            ItunesInterface::appendOutputLog("ERROR: more arguments required for add recording");
+            ItunesInterface::appendOutputLog("ERROR: missing args for add -r aid title artist producer year");
         }
         else {
             istringstream ss(args[2]);
@@ -169,7 +169,7 @@ void ItunesInterface::add(vector<string> args) {
     }
     else if (args[1] == "-s" ) {
         if (args.size() < 5) {
-            ItunesInterface::appendOutputLog("ERROR: more arguments required for add song");
+            ItunesInterface::appendOutputLog("ERROR: more args required for add -s sid title composer");
         }
         else {
             istringstream ss(args[2]);
@@ -192,7 +192,7 @@ void ItunesInterface::add(vector<string> args) {
     }
     else if (args[1] == "-t" ) {
         if (args.size() < 6) {
-            ItunesInterface::appendOutputLog("ERROR: requires more arguments for add track");
+            ItunesInterface::appendOutputLog("ERROR: more args required for add -t tid aid sid track_number");
         }
         else {
             vector<int> v {0,0,0,0};
@@ -224,6 +224,7 @@ void ItunesInterface::add(vector<string> args) {
                         else {
                             tracks[v[0]] = make_shared< Track >( songs[v[2]] );
                             recordings[v[1]]->insertTrack(v[3]-1, tracks[v[0]], recordings[v[1]]);
+                            tracks[v[0]]->getSong().lock()->addTrack(tracks[v[0]]);
                         }
                     }
                 }
@@ -266,7 +267,7 @@ void ItunesInterface::add(vector<string> args) {
     }
     else if (args[1] == "-l" ) {
         if (args.size() < 5) {
-            ItunesInterface::appendOutputLog("ERROR: add playlist tracks needs more arguments");
+            ItunesInterface::appendOutputLog("ERROR: missing args for add -l uid playlist_name tid");
         }
         else {
             istringstream ss(args[4]);
@@ -393,23 +394,22 @@ void ItunesInterface::del(vector<string> args) {
         ItunesInterface::appendOutputLog("ERROR: more arguments required for delete cmd");
         return;
     }
-    // if (args[1] == "-u") {
-    //     if (users.find(args[2]) == users.end()) {
-    //         ItunesInterface::appendOutputLog("ERROR: cannot find user of id: " + args[2]);
-    //     }
-    //     else {
-    //         users[args[2]]->clearReferences(users[args[2]]);
-    //         users.erase(args[2]);
-    //     }
-    // }
-    // else if (args[1] == "-p") {
-    //     if (args.size() < 5) {
-    //         ItunesInterface::appendOutputLog("ERROR: not enough arguments");
-    //     }
-    // }
-    // else {
-    //     ItunesInterface::appendOutputLog("ERROR: invalid flag");
-    // }
+    if (args.size() == 3 && args[1] == "-t") {
+        istringstream ss(args[2]);
+        int id;
+        if (ss >> id) {
+            if ( tracks.find(id) == tracks.end() ) {
+                ItunesInterface::appendOutputLog("ERROR: track id not found");
+            }
+            else {
+                tracks[id]->purgeTrack( tracks[id] );
+                tracks.erase(id);
+            }
+        }
+        else {
+            ItunesInterface::appendOutputLog("ERROR: cannot parse track id as int");
+        }
+    }
 }
 
 void ItunesInterface::dot_help() {
@@ -451,7 +451,6 @@ void ItunesInterface::dot_help() {
     cout<<"   "<<endl;
     cout<<"delete  //delete data from collections"<<endl;
     cout<<"    delete -s song_id //delete song based on song id (based on title, composer etc.)"<<endl;
-    cout<<"    delete -s track_id -p playlist_name -u user_name //DEPRECATED delete track from playlist"<<endl;
     cout<<"    delete -t track_id -p playlist_name -u user_name //delete track from playlist"<<endl;
     cout<<"    delete -Global -s track_id -p playlist_name -u user_name  //DEPRECATED but still supported"<<endl;
     cout<<"    delete -Global -t track_id -p playlist_name -u user_name"<<endl;
@@ -681,7 +680,5 @@ string ItunesInterface::dot_toTitleCase(string s) {
         build = build.substr(4, build.length()-4);
         build += ", The";
     }
-    cout << build << endl;
-    cout << build.length() << endl;
 	return build;
 }

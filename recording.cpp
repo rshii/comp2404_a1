@@ -1,5 +1,6 @@
 #include "recording.hpp"
 #include "track.hpp"
+#include "song.hpp"
 
 using namespace std;
 
@@ -36,10 +37,22 @@ bool Recording::insertTrack( int i, shared_ptr< Track > x, shared_ptr< Recording
     return true;
 }
 
+void Recording::delinkTrack( std::shared_ptr < Track > x ) {
+    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
+        auto w = (*it).lock();
+        if (w==x) {
+            tracks.erase(it--);
+        }
+    }
+}
+
 std::ostream &operator<<( std::ostream &output, const Recording &x ){ 
             output << "Title: " << x.title << endl;
             output << "Artist: " << x.artist << endl;
             output << "Producer: " << x.producer << endl;
             output << "Year: " << x.year << endl;
+            for ( int i = 0; i < x.tracks.size(); ++i ) {
+                output << "Track " << (i+1) << ": " << x.tracks[i].lock()->getSong().lock()->getTitle() << endl;
+            }
             return output;            
 }

@@ -34,6 +34,7 @@ class Recording {
 
         std::weak_ptr < Track > getTrack( int i );
         bool insertTrack( int i, std::shared_ptr < Track > x, std::shared_ptr< Recording > p );
+        void delinkTrack( std::shared_ptr < Track > x );
 
         friend std::ostream &operator<<( std::ostream &output, const Recording &x );
 };

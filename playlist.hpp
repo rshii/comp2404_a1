@@ -28,6 +28,7 @@ class Playlist {
         std::weak_ptr< User > getUser();
         std::weak_ptr< Track > getTrack( int i );
         void appendTrack( std::shared_ptr< Track > x, std::shared_ptr< Playlist > p );
+        void delinkTrack( std::shared_ptr < Track > x );
 
         friend std::ostream &operator<<( std::ostream &output, const Playlist &x );
 };

@@ -32,5 +32,7 @@ class Track {
         void linkPlaylist( std::shared_ptr< Playlist > );
         void linkRecording( std::shared_ptr< Recording > );
 
+        void purgeTrack( std::shared_ptr< Track > );
+
         friend std::ostream &operator<<( std::ostream &output, const Track &x );
 };

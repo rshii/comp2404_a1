@@ -30,12 +30,20 @@ void Playlist::appendTrack( shared_ptr< Track > x, shared_ptr< Playlist > pl) {
     x->linkPlaylist( pl );
 }
 
+void Playlist::delinkTrack( std::shared_ptr < Track > x ) {
+    for (auto it = tracks.begin(); it != tracks.end(); ++it ) {
+        auto w = (*it).lock();
+        if (w==x) {
+            tracks.erase(it--);
+        }
+    }
+}
+
 std::ostream &operator<<( std::ostream &output, const Playlist &x ){ 
-            output << "Name: " << x.name << endl;
+            output << "Playlist name: " << x.name << endl;
             output << "Owned by: " << x.user.lock()->getName() << endl;
-            output << "<Tracks added>" << endl;
-            for (auto it = x.tracks.begin(); it != x.tracks.end(); ++it ){
-                output << (*it).lock()->getSong().lock()->getTitle() << endl;
+            for ( int i = 0; i < x.tracks.size(); ++i ) {
+                output << "Track " << (i+1) << ": " << x.tracks[i].lock()->getSong().lock()->getTitle() << endl;
             }
             return output;            
 }
