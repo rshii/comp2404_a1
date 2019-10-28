@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "user.hpp"
 #include "playlist.hpp"
 

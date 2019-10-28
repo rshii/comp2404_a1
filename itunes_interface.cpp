@@ -1,5 +1,6 @@
 #include "itunes_interface.hpp"
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <vector>
